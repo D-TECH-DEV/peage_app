@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tarif;
 use Illuminate\Http\Request;
+
+use function PHPUnit\Framework\isNull;
 
 class UserController extends Controller
 {
@@ -27,7 +30,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "montant" => 'required|int'
+        ],[
+            "montant.required" => "Le montant est oligatoire pour l'ajout d'un tarif",
+            "montant.int" => "Le montant doit être un entier"
+        ]);
+
+        $currentTarif=Tarif::getCurrentTarifBynMontant($request->montant);
+
+        if($currentTarif.isNull()) {
+            return back()->withErrors("Le montant est actuellement disponible") ;
+        }
+
+        $tarif = Tarif::update([
+            "montant" => $request->montant
+        ]);
+
+        return redirect("tarif.index");
     }
 
     /**
@@ -51,7 +71,24 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            "montant" => 'required|int|'
+        ],[
+            "montant.required" => "Le montant est oligatoire pour l'ajout d'un tarif",
+            "montant.int" => "Le montant doit être un entier"
+        ]);
+
+       $currentTarif=Tarif::getCurrentTarifBynMontant($request->montant);
+
+       if($currentTarif.isNull()) {
+            return back()->withErrors("Le montant est actuellement disponible") ;
+       }
+
+        $tarif = Tarif::update([
+            "montant" => $request->montant
+        ]);
+
+        return redirect("Le montant a bien été mis à jour !");
     }
 
     /**
