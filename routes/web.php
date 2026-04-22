@@ -12,6 +12,10 @@ use App\Http\Controllers\UserController;
 
 
 
+<<<<<<< HEAD
+=======
+// ROUTES FRONTEND
+>>>>>>> 6b047475af62494f28d43f4d9f045085af1b029f
 
 Route::get('/', function () {
     return 'Bienvenue sur la page d\'accueil (Frontend) du Péage';
@@ -23,10 +27,15 @@ Route::get('/guichets', [GuichetController::class, 'index'])->name('frontend.gui
 
 
 
+<<<<<<< HEAD
+=======
+
+// ROUTES BACKEND
+>>>>>>> 6b047475af62494f28d43f4d9f045085af1b029f
 Route::prefix('admin')->name('admin.')->group(function () {
-    
+
     Route::get('/', function () {
-        return 'Tableau de bord de l\'Administration (Backend)';
+        return 'Tableau de bord ';
     })->name('dashboard');
 
     Route::resource('users', UserController::class);

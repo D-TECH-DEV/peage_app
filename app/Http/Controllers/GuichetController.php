@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guichet;
 use Illuminate\Http\Request;
 
 class GuichetController extends Controller
@@ -11,7 +12,10 @@ class GuichetController extends Controller
      */
     public function index()
     {
-        //
+        $datas=[
+            Guichet::all(),
+        ];
+        return view("guichet.index",compact('datas'));
     }
 
     /**
