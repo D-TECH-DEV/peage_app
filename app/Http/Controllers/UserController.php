@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tarif;
+use App\Models\User;
 use Illuminate\Http\Request;
-
-use function PHPUnit\Framework\isNull;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,7 +13,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -22,7 +22,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.users.create');
     }
 
     /**
@@ -31,23 +31,33 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "montant" => 'required|int'
-        ],[
-            "montant.required" => "Le montant est oligatoire pour l'ajout d'un tarif",
-            "montant.int" => "Le montant doit être un entier"
+            'nom' => 'required|string|max:100',
+            'prenoms' => 'required|string|max:100',
+            'email' => 'required|email|unique:user,email',
+            'password' => 'required|string|min:8',
+        ], [
+            'nom.required' => 'Le nom est obligatoire.',
+            'nom.string' => 'Le nom doit être une chaîne de caractères.',
+            'nom.max' => 'Le nom ne doit pas dépasser 100 caractères.',
+            'prenoms.required' => 'Le prénom est obligatoire.',
+            'prenoms.string' => 'Le prénom doit être une chaîne de caractères.',
+            'prenoms.max' => 'Le prénom ne doit pas dépasser 100 caractères.',
+            'email.required' => 'L’adresse email est obligatoire.',
+            'email.email' => 'L’adresse email doit être une adresse valide.',
+            'email.unique' => 'Cette adresse email est déjà utilisée.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
         ]);
 
-        $currentTarif=Tarif::getCurrentTarifBynMontant($request->montant);
-
-        if($currentTarif.isNull()) {
-            return back()->withErrors("Le montant est actuellement disponible") ;
-        }
-
-        $tarif = Tarif::update([
-            "montant" => $request->montant
+        User::create([
+            'nom' => $request->nom,
+            'prenoms' => $request->prenoms,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
-        return redirect("tarif.index");
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Utilisateur créé avec succès.');
     }
 
     /**
@@ -55,7 +65,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -63,7 +74,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        return view('admin.users.edit', compact('user'));
     }
 
     /**
@@ -71,24 +83,35 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = User::findOrFail($id);
+
         $request->validate([
-            "montant" => 'required|int|'
-        ],[
-            "montant.required" => "Le montant est oligatoire pour l'ajout d'un tarif",
-            "montant.int" => "Le montant doit être un entier"
+            'nom' => 'required|string|max:100',
+            'prenoms' => 'required|string|max:100',
+            'email' => 'required|email|unique:user,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+        ], [
+            'nom.required' => 'Le nom est obligatoire.',
+            'nom.string' => 'Le nom doit être une chaîne de caractères.',
+            'nom.max' => 'Le nom ne doit pas dépasser 100 caractères.',
+            'prenoms.required' => 'Le prénom est obligatoire.',
+            'prenoms.string' => 'Le prénom doit être une chaîne de caractères.',
+            'prenoms.max' => 'Le prénom ne doit pas dépasser 100 caractères.',
+            'email.required' => 'L’adresse email est obligatoire.',
+            'email.email' => 'L’adresse email doit être une adresse valide.',
+            'email.unique' => 'Cette adresse email est déjà utilisée.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
         ]);
 
-       $currentTarif=Tarif::getCurrentTarifBynMontant($request->montant);
+        $data = $request->only(['nom', 'prenoms', 'email']);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
 
-       if($currentTarif.isNull()) {
-            return back()->withErrors("Le montant est actuellement disponible") ;
-       }
+        $user->update($data);
 
-        $tarif = Tarif::update([
-            "montant" => $request->montant
-        ]);
-
-        return redirect("Le montant a bien été mis à jour !");
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Utilisateur mis à jour avec succès.');
     }
 
     /**
@@ -96,6 +119,10 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Utilisateur supprimé avec succès.');
     }
 }

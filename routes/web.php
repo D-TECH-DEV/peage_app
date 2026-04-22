@@ -10,28 +10,15 @@ use App\Http\Controllers\TarifController;
 use App\Http\Controllers\TypePaiementController;
 use App\Http\Controllers\UserController;
 
-
-
-<<<<<<< HEAD
-=======
 // ROUTES FRONTEND
->>>>>>> 6b047475af62494f28d43f4d9f045085af1b029f
-
 Route::get('/', function () {
     return 'Bienvenue sur la page d\'accueil (Frontend) du Péage';
 });
 
-
 Route::get('/tarifs', [TarifController::class, 'index'])->name('frontend.tarifs.index');
 Route::get('/guichets', [GuichetController::class, 'index'])->name('frontend.guichets.index');
 
-
-
-<<<<<<< HEAD
-=======
-
 // ROUTES BACKEND
->>>>>>> 6b047475af62494f28d43f4d9f045085af1b029f
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/', function () {

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\TypePaiement;
 use Illuminate\Http\Request;
 
-use function PHPUnit\Framework\isNull;
-
 class TypePaiementController extends Controller
 {
     /**
@@ -14,7 +12,8 @@ class TypePaiementController extends Controller
      */
     public function index()
     {
-        //
+        $types = TypePaiement::all();
+        return view('admin.types-paiements.index', compact('types'));
     }
 
     /**
@@ -22,7 +21,7 @@ class TypePaiementController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.types-paiements.create');
     }
 
     /**
@@ -31,23 +30,17 @@ class TypePaiementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "libelle" => 'required|int'
-        ],[
-            "libelle.required" => "Le libelle est oligatoire pour l'ajout d'un tarif",
-            "libelle.int" => "Le libelle doit être un entier"
+            'libelle' => 'required|string|max:50',
+        ], [
+            'libelle.required' => 'Le libellé du type de paiement est obligatoire.',
+            'libelle.string' => 'Le libellé doit être une chaîne de caractères.',
+            'libelle.max' => 'Le libellé ne doit pas dépasser 50 caractères.',
         ]);
 
-        //$currentTarif=Tarif::getCurrentTarifBynlibelle($request->libelle);
+        TypePaiement::create($request->all());
 
-        // if($currentTarif.isNull()) {
-        //     return back()->withErrors("Le libelle est actuellement disponible") ;
-        // }
-
-        $tarif = TypePaiement::create([
-            "libelle" => $request->libelle
-        ]);
-
-        return redirect("tarif.index");
+        return redirect()->route('admin.types-paiements.index')
+            ->with('success', 'Type de paiement créé avec succès.');
     }
 
     /**
@@ -55,7 +48,8 @@ class TypePaiementController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $type = TypePaiement::findOrFail($id);
+        return view('admin.types-paiements.show', compact('type'));
     }
 
     /**
@@ -63,7 +57,8 @@ class TypePaiementController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $type = TypePaiement::findOrFail($id);
+        return view('admin.types-paiements.edit', compact('type'));
     }
 
     /**
@@ -72,18 +67,18 @@ class TypePaiementController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            "libelle" => 'required|string'
-        ],[
-            "libelle.required" => "Le libelle est oligatoire pour l'ajout d'un type de paiement",
-            "libelle.sting" => "Le libelle doit être un un chaine de caractère"
+            'libelle' => 'required|string|max:50',
+        ], [
+            'libelle.required' => 'Le libellé du type de paiement est obligatoire.',
+            'libelle.string' => 'Le libellé doit être une chaîne de caractères.',
+            'libelle.max' => 'Le libellé ne doit pas dépasser 50 caractères.',
         ]);
 
+        $type = TypePaiement::findOrFail($id);
+        $type->update($request->all());
 
-        $tarif = TypePaiement::where('id', $id)->update([
-            "libelle" => $request->libelle
-        ]);
-
-        return redirect("Le type de paiement a bien été mis à jour !");
+        return redirect()->route('admin.types-paiements.index')
+            ->with('success', 'Type de paiement mis à jour avec succès.');
     }
 
     /**
@@ -91,6 +86,10 @@ class TypePaiementController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $type = TypePaiement::findOrFail($id);
+        $type->delete();
+
+        return redirect()->route('admin.types-paiements.index')
+            ->with('success', 'Type de paiement supprimé avec succès.');
     }
 }
