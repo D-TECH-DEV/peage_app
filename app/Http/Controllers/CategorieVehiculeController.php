@@ -40,7 +40,7 @@ class CategorieVehiculeController extends Controller
 
         CategorieVehicule::create($request->all());
 
-        return redirect()->route('admin.categories-vehicules.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'categories')
             ->with('success', 'Catégorie de véhicule créée avec succès.');
     }
 
@@ -78,7 +78,7 @@ class CategorieVehiculeController extends Controller
         $categorie = CategorieVehicule::findOrFail($id);
         $categorie->update($request->all());
 
-        return redirect()->route('admin.categories-vehicules.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'categories')
             ->with('success', 'Catégorie de véhicule mise à jour avec succès.');
     }
 
@@ -90,7 +90,7 @@ class CategorieVehiculeController extends Controller
         $categorie = CategorieVehicule::findOrFail($id);
         $categorie->delete();
 
-        return redirect()->route('admin.categories-vehicules.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'categories')
             ->with('success', 'Catégorie de véhicule supprimée avec succès.');
     }
 }

@@ -33,7 +33,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     })->name('rapports.index');
 
     Route::get('/settings', function() {
-        return view('admin.settings.index');
+        $categories = \App\Models\CategorieVehicule::all();
+        $types = \App\Models\TypePaiement::all();
+        $tarifs = \App\Models\Tarif::with('categorieVehicule')->get();
+        return view('admin.settings.index', compact('categories', 'types', 'tarifs'));
     })->name('settings.index');
 
     Route::resource('users', UserController::class);

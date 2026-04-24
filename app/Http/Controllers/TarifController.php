@@ -50,7 +50,7 @@ class TarifController extends Controller
 
         Tarif::create($request->all());
 
-        return redirect()->route('admin.tarifs.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'tarifs')
             ->with('success', 'Tarif créé avec succès.');
     }
 
@@ -98,7 +98,7 @@ class TarifController extends Controller
         $tarif = Tarif::findOrFail($id);
         $tarif->update($request->all());
 
-        return redirect()->route('admin.tarifs.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'tarifs')
             ->with('success', 'Tarif mis à jour avec succès.');
     }
 
@@ -110,7 +110,7 @@ class TarifController extends Controller
         $tarif = Tarif::findOrFail($id);
         $tarif->delete();
 
-        return redirect()->route('admin.tarifs.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'tarifs')
             ->with('success', 'Tarif supprimé avec succès.');
     }
 }

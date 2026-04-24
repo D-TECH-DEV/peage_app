@@ -39,7 +39,7 @@ class TypePaiementController extends Controller
 
         TypePaiement::create($request->all());
 
-        return redirect()->route('admin.types-paiements.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'paiements')
             ->with('success', 'Type de paiement créé avec succès.');
     }
 
@@ -77,7 +77,7 @@ class TypePaiementController extends Controller
         $type = TypePaiement::findOrFail($id);
         $type->update($request->all());
 
-        return redirect()->route('admin.types-paiements.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'paiements')
             ->with('success', 'Type de paiement mis à jour avec succès.');
     }
 
@@ -89,7 +89,7 @@ class TypePaiementController extends Controller
         $type = TypePaiement::findOrFail($id);
         $type->delete();
 
-        return redirect()->route('admin.types-paiements.index')
+        return redirect()->route('admin.settings.index')->with('active_tab', 'paiements')
             ->with('success', 'Type de paiement supprimé avec succès.');
     }
 }
