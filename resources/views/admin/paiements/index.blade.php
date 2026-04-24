@@ -2,6 +2,15 @@
 
 @section('title', 'Transactions')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+<style>
+/* Customizing datatables simple slightly for Tailwind */
+.dataTable-input { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.875rem; }
+.dataTable-selector { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.875rem; }
+</style>
+@endpush
+
 @section('content')
 <div class="flex items-start justify-between mb-6">
   <div>
@@ -10,14 +19,14 @@
   </div>
   <div>
     <button class="text-sm px-4 py-2 bg-[#ccd5ae] text-white rounded-lg hover:bg-[#b0bd89] transition mr-2">Exporter CSV</button>
-    <a href="{{ route('admin.paiements.create') }}" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition inline-flex items-center">
+    <button onclick="document.getElementById('transactionModal').showModal()" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition inline-flex items-center cursor-pointer">
       Nouvelle transaction
-    </a>
+    </button>
   </div>
 </div>
 
 <!-- Filtres -->
-<div class="flex gap-3 mb-5">
+{{-- <div class="flex gap-3 mb-5">
   <select class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
     <option>Tous les véhicules</option>
     <option>Voiture légère</option>
@@ -39,41 +48,153 @@
     <option>Guichet 03</option>
   </select>
   <input type="date" class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1D9E75]" />
-</div>
+</div> --}}
 
-<div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
-  <table class="w-full text-sm">
+<div class="bg-white border border-gray-100 rounded-2xl overflow-hidden mt-5 p-4">
+  <table id="transactionsTable" class="w-full text-sm">
     <thead class="bg-gray-50 border-b border-gray-100">
       <tr>
         <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">ID</th>
         <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Date / Heure</th>
         <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Type de véhicule</th>
+        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Immatriculation</th>
         <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Guichet</th>
         <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Mode de paiement</th>
         <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Montant</th>
         <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Statut</th>
-        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Actions</th>
+        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Agent</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-50">
       @forelse($paiements as $paiement)
-        <!-- Code using actual variable if injected -->
+        <tr class="hover:bg-gray-50/50 transition">
+            <td class="px-5 py-3 font-mono text-xs text-gray-400">#TX{{ str_pad($paiement->id, 3, '0', STR_PAD_LEFT) }}</td>
+            <td class="px-5 py-3 text-gray-600">{{ $paiement->date_paiement ?? $paiement->created_at->format('d M Y — H:i') }}</td>
+            <td class="px-5 py-3 text-gray-800">{{ $paiement->categorieVehicule->libelle ?? 'N/A' }}</td>
+            <td class="px-5 py-3 text-gray-600">{{ $paiement->immatriculation ?? '-' }}</td>
+            <td class="px-5 py-3 text-gray-600">{{ $paiement->guichet->code ?? 'N/A' }}</td>
+            <td class="px-5 py-3 text-gray-600">{{ $paiement->typePaiement->libelle ?? 'N/A' }}</td>
+            <td class="px-5 py-3 text-right font-medium">{{ number_format($paiement->montant, 0, ',', ' ') }} F</td>
+            <td class="px-5 py-3 text-right">
+                @if(($paiement->statut ?? 'Payé') == 'Payé')
+                    <span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span>
+                @elseif(($paiement->statut ?? '') == 'En attente')
+                    <span class="pill-amber text-[11px] px-2.5 py-0.5 rounded-full">En attente</span>
+                @else
+                    <span class="pill-gray text-[11px] px-2.5 py-0.5 rounded-full">{{ $paiement->statut ?? 'Inconnu' }}</span>
+                @endif
+            </td>
+            <td class="px-5 py-3 text-right text-gray-500">{{ $paiement->user->nom ?? 'N/A' }}</td>
+        </tr>
       @empty
-        <!-- Fallback static data from HTML prototype -->
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX001</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 07:14</td><td class="px-5 py-3 text-gray-800">Camion lourd</td><td class="px-5 py-3 text-gray-600">G-02</td><td class="px-5 py-3 text-gray-600">Espèces</td><td class="px-5 py-3 text-right font-medium">2 500 F</td><td class="px-5 py-3 text-right"><span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX002</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 07:28</td><td class="px-5 py-3 text-gray-800">Voiture légère</td><td class="px-5 py-3 text-gray-600">G-01</td><td class="px-5 py-3 text-gray-600">Mobile Money</td><td class="px-5 py-3 text-right font-medium">500 F</td><td class="px-5 py-3 text-right"><span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX003</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 07:45</td><td class="px-5 py-3 text-gray-800">Bus</td><td class="px-5 py-3 text-gray-600">G-04</td><td class="px-5 py-3 text-gray-600">Carte bancaire</td><td class="px-5 py-3 text-right font-medium">1 500 F</td><td class="px-5 py-3 text-right"><span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX004</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 08:03</td><td class="px-5 py-3 text-gray-800">Moto</td><td class="px-5 py-3 text-gray-600">G-03</td><td class="px-5 py-3 text-gray-600">Espèces</td><td class="px-5 py-3 text-right font-medium">200 F</td><td class="px-5 py-3 text-right"><span class="pill-amber text-[11px] px-2.5 py-0.5 rounded-full">En attente</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX005</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 08:19</td><td class="px-5 py-3 text-gray-800">Camion léger</td><td class="px-5 py-3 text-gray-600">G-05</td><td class="px-5 py-3 text-gray-600">Espèces</td><td class="px-5 py-3 text-right font-medium">1 500 F</td><td class="px-5 py-3 text-right"><span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX006</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 08:34</td><td class="px-5 py-3 text-gray-800">Voiture légère</td><td class="px-5 py-3 text-gray-600">G-02</td><td class="px-5 py-3 text-gray-600">Mobile Money</td><td class="px-5 py-3 text-right font-medium">500 F</td><td class="px-5 py-3 text-right"><span class="pill-red text-[11px] px-2.5 py-0.5 rounded-full">Annulé</span></td><td class="px-5 py-3 text-right"></td></tr>
-        <tr class="hover:bg-gray-50/50 transition"><td class="px-5 py-3 font-mono text-xs text-gray-400">#TX007</td><td class="px-5 py-3 text-gray-600">23 Avr. 2025 — 08:51</td><td class="px-5 py-3 text-gray-800">Bus</td><td class="px-5 py-3 text-gray-600">G-06</td><td class="px-5 py-3 text-gray-600">Abonnement</td><td class="px-5 py-3 text-right font-medium">0 F</td><td class="px-5 py-3 text-right"><span class="pill-blue text-[11px] px-2.5 py-0.5 rounded-full">Abonné</span></td><td class="px-5 py-3 text-right"></td></tr>
+      <tr>
+        <td colspan="9" class="text-center py-8 text-gray-500">Aucune transaction enregistrée.</td>
+      </tr>
       @endforelse
     </tbody>
   </table>
-  @if(isset($paiements) && method_exists($paiements, 'links'))
-    <div class="px-5 py-3 border-t border-gray-100">
-      {{ $paiements->links() }}
-    </div>
-  @endif
 </div>
+
+<!-- Nouvelle transaction Modal -->
+<dialog id="transactionModal" class="backdrop:bg-gray-800/50 p-0 rounded-2xl shadow-xl w-full max-w-lg mx-auto bg-white border-0 open:backdrop-blur-sm transition-all">
+    <div class="p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-lg font-semibold text-gray-900">Nouvelle transaction</h3>
+            <button type="button" onclick="document.getElementById('transactionModal').close()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <form action="{{ route('admin.paiements.store') }}" method="POST" class="space-y-4">
+            @csrf
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie véhicule</label>
+                    <select name="categorie_vehicule_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                        <option value="">Sélectionner...</option>
+                        @foreach($categories as $categorie)
+                            <option value="{{ $categorie->id }}">{{ $categorie->libelle }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mode de paiement</label>
+                    <select name="type_paiement_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                        <option value="">Sélectionner...</option>
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}">{{ $type->libelle }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Montant (F CFA)</label>
+                    <input type="number" name="montant" required min="0" step="50" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Immatriculation</label>
+                    <input type="text" name="immatriculation" placeholder="Facultatif" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Guichet</label>
+                    <select name="guichet_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                        @foreach($guichets as $guichet)
+                            <option value="{{ $guichet->id }}">{{ $guichet->code }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Agent (Utilisateur)</label>
+                    <select name="user_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ auth()->id() == $user->id ? 'selected' : '' }}>{{ $user->nom }} {{ $user->prenoms }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                <select name="statut" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+                    <option value="Payé">Payé</option>
+                    <option value="En attente">En attente</option>
+                    <option value="Annulé">Annulé</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-5">
+                <button type="button" onclick="document.getElementById('transactionModal').close()" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-[#1D9E75] text-white rounded-lg text-sm hover:bg-[#0F6E56]">Enregistrer le paiement</button>
+            </div>
+        </form>
+    </div>
+</dialog>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const table = document.getElementById("transactionsTable");
+    if (table) {
+        new simpleDatatables.DataTable(table, {
+            searchable: true,
+            fixedHeight: false,
+            perPage: 10,
+            labels: {
+                placeholder: "Rechercher...",
+                perPage: "transactions par page",
+                noRows: "Aucune transaction trouvée",
+                info: "Affichage de {start} à {end} sur {rows} transactions"
+            }
+        });
+    }
+});
+</script>
+@endpush

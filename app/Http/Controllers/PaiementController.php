@@ -17,7 +17,11 @@ class PaiementController extends Controller
     public function index()
     {
         $paiements = Paiement::with(['categorieVehicule', 'typePaiement', 'guichet', 'user'])->get();
-        return view('admin.paiements.index', compact('paiements'));
+        $categories = CategorieVehicule::all();
+        $types = TypePaiement::all();
+        $guichets = Guichet::all();
+        $users = User::all();
+        return view('admin.paiements.index', compact('paiements', 'categories', 'types', 'guichets', 'users'));
     }
 
     /**
