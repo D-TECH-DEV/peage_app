@@ -3,7 +3,7 @@
 @section('title', 'Agents')
 
 @section('content')
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
   <div>
     <h1 class="text-xl font-semibold text-gray-900">Agents</h1>
     <p class="text-sm text-gray-500 mt-0.5">Gestion du personnel affecté aux guichets.</p>
@@ -14,7 +14,7 @@
     </button>
   </div>
 </div>
-<div class="grid grid-cols-3 gap-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
   @forelse($users as $user)
     <div class="bg-white border border-gray-100 rounded-2xl p-5 flex items-start gap-4">
       <div class="w-10 h-10 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#0F6E56] font-semibold text-sm flex-shrink-0">
@@ -89,7 +89,7 @@
     </dialog>
 
   @empty
-  <div class="col-span-3 p-8 text-center bg-white border border-gray-100 rounded-2xl">
+  <div class="col-span-full p-8 text-center bg-white border border-gray-100 rounded-2xl">
       <p class="text-gray-500">Aucun agent configuré.</p>
   </div>
   @endforelse

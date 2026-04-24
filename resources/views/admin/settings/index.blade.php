@@ -47,11 +47,11 @@
 
 <!-- Tab Content: Categories -->
 <div id="categories" class="tab-content hidden">
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
     <h3 class="text-base font-semibold text-gray-800">Catégories de véhicules enregistrées</h3>
     <button onclick="document.getElementById('modal-categorie').showModal()" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition">Nouvelle catégorie</button>
   </div>
-  <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+  <div id="active-categories-container" class="bg-white border border-gray-100 rounded-2xl overflow-hidden overflow-x-auto">
     <table class="w-full text-sm">
       <thead class="bg-gray-50 border-b border-gray-100">
         <tr>
@@ -82,11 +82,11 @@
 
 <!-- Tab Content: Paiements -->
 <div id="paiements" class="tab-content hidden">
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
     <h3 class="text-base font-semibold text-gray-800">Modes de paiement enregistrés</h3>
     <button onclick="document.getElementById('modal-type').showModal()" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition">Nouveau mode</button>
   </div>
-  <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+  <div id="active-paiements-container" class="bg-white border border-gray-100 rounded-2xl overflow-hidden overflow-x-auto">
     <table class="w-full text-sm">
       <thead class="bg-gray-50 border-b border-gray-100">
         <tr>
@@ -117,11 +117,11 @@
 
 <!-- Tab Content: Tarifs -->
 <div id="tarifs" class="tab-content hidden">
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
     <h3 class="text-base font-semibold text-gray-800">Grille tarifaire active</h3>
     <button onclick="document.getElementById('modal-tarif').showModal()" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition">Nouveau tarif</button>
   </div>
-  <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+  <div id="active-tarifs-container" class="bg-white border border-gray-100 rounded-2xl overflow-hidden overflow-x-auto">
     <table class="w-full text-sm">
       <thead class="bg-gray-50 border-b border-gray-100">
         <tr>

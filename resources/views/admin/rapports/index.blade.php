@@ -7,7 +7,7 @@
   <h1 class="text-xl font-semibold text-gray-900">Rapports</h1>
   <p class="text-sm text-gray-500 mt-0.5">Analyse détaillée des recettes et performances.</p>
 </div>
-<div class="grid grid-cols-2 gap-4 mb-5">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
   <div class="bg-white border border-gray-100 rounded-2xl p-5">
     <h3 class="text-sm font-medium text-gray-800 mb-4">Recettes par type de véhicule</h3>
     <div class="relative h-56"><canvas id="chartRapportVehicule"></canvas></div>

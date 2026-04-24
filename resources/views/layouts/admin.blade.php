@@ -58,18 +58,26 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-<div class="flex h-screen overflow-hidden">
+<div class="flex h-screen overflow-hidden bg-gray-50">
 
-  <!-- ===== SIDEBAR ===== -->
-  <aside class="w-52 bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
+  <!-- Sidebar Backdrop (Mobile) -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300 opacity-0" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transform -translate-x-full transition-transform duration-300 md:static md:translate-x-0 md:w-52 flex-shrink-0">
 
     <!-- Logo -->
-    <div class="px-5 py-5 border-b border-gray-100">
-      <div class="w-9 h-9 bg-[#1D9E75] rounded-xl flex items-center justify-center mb-3">
-        <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5-1.1 2.5-2.5 2.5z"/></svg>
+    <div class="px-5 py-5 border-b border-gray-100 flex items-center justify-between">
+      <div class="flex flex-col">
+        <div class="w-9 h-9 bg-[#1D9E75] rounded-xl flex items-center justify-center mb-3">
+          <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5-1.1 2.5-2.5 2.5z"/></svg>
+        </div>
+        <p class="text-sm font-semibold text-gray-800">Péage Pro</p>
+        <p class="text-xs text-gray-400">Gestion des paiements</p>
       </div>
-      <p class="text-sm font-semibold text-gray-800">Péage Pro</p>
-      <p class="text-xs text-gray-400">Gestion des paiements</p>
+      <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
     </div>
 
     <!-- Nav Menu -->
@@ -119,34 +127,68 @@
     </nav>
   </aside>
 
-  <!-- ===== MAIN CONTENT ===== -->
-  <main class="flex-1 overflow-y-auto bg-gray-50">
-    <div class="p-6 max-w-7xl mx-auto">
-      @if ($errors->any())
-        <div class="mb-5 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl relative">
-          <h4 class="text-sm font-semibold mb-1">Veuillez corriger les erreurs suivantes :</h4>
-          <ul class="list-disc list-inside text-sm">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
+  <!-- Content Area -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- Mobile Top Header -->
+    <header class="md:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between flex-shrink-0 sticky top-0 z-30">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-[#1D9E75] rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5-1.1 2.5-2.5 2.5z"/></svg>
         </div>
-      @endif
+        <span class="text-sm font-semibold text-gray-800">Péage Pro</span>
+      </div>
+      <button onclick="toggleSidebar()" class="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
 
-      @if (session('success'))
-        <div class="mb-5 p-4 bg-[#E1F5EE] border border-[#1D9E75]/20 text-[#0F6E56] rounded-xl flex items-center gap-3">
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-          <p class="text-sm font-medium">{{ session('success') }}</p>
-        </div>
-      @endif
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="flex-1 overflow-y-auto focus:outline-none">
+      <div class="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+        @if ($errors->any())
+          <div class="mb-5 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl relative">
+            <h4 class="text-sm font-semibold mb-1">Veuillez corriger les erreurs suivantes :</h4>
+            <ul class="list-disc list-inside text-sm">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
 
-      @yield('content')
-    </div>
-  </main>
+        @if (session('success'))
+          <div class="mb-5 p-4 bg-[#E1F5EE] border border-[#1D9E75]/20 text-[#0F6E56] rounded-xl flex items-center gap-3">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <p class="text-sm font-medium">{{ session('success') }}</p>
+          </div>
+        @endif
+
+        @yield('content')
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- ===== JAVASCRIPT ===== -->
 <script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebar.classList.contains('-translate-x-full')) {
+        // Open
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.add('opacity-100'), 10);
+    } else {
+        // Close
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.remove('opacity-100');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+}
+
 $(document).ready(function() {
     function initSelect2() {
         $('select').each(function() {

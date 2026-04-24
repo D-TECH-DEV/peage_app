@@ -11,6 +11,7 @@ use App\Http\Controllers\TypePaiementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 // ROUTES FRONTEND
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -18,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
-    return 'Bienvenue sur la page d\'accueil (Frontend) du Péage';
+    return Hash::make('dydoumdje2004@gmail.com');
 });
 
 Route::get('/tarifs', [TarifController::class, 'index'])->name('frontend.tarifs.index');
@@ -27,9 +28,7 @@ Route::get('/guichets', [GuichetController::class, 'index'])->name('frontend.gui
 // ROUTES BACKEND
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
-    Route::get('/', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/rapports', function() {
         return view('admin.rapports.index');

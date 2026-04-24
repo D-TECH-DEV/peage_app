@@ -3,7 +3,7 @@
 @section('title', 'Guichets')
 
 @section('content')
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
   <div>
     <h1 class="text-xl font-semibold text-gray-900">Guichets</h1>
     <p class="text-sm text-gray-500 mt-0.5">Gestion et état de chaque guichet de péage.</p>
@@ -15,7 +15,7 @@
   </div>
 </div>
 
-<div class="grid grid-cols-4 gap-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
   @forelse($guichets as $guichet)
   <div class="bg-white border border-gray-100 rounded-2xl p-5 {{ ($guichet->statut == 'Inactif') ? 'opacity-60' : '' }}">
     <div class="flex justify-between items-start mb-3">
@@ -76,7 +76,7 @@
   </dialog>
 
   @empty
-  <div class="col-span-4 p-8 text-center bg-white border border-gray-100 rounded-2xl">
+  <div class="col-span-full p-8 text-center bg-white border border-gray-100 rounded-2xl">
       <p class="text-gray-500">Aucun guichet configuré.</p>
   </div>
   @endforelse

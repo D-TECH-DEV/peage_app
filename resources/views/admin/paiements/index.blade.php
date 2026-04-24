@@ -12,7 +12,7 @@
 @endpush
 
 @section('content')
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
   <div>
     <h1 class="text-xl font-semibold text-gray-900">Transactions</h1>
     <p class="text-sm text-gray-500 mt-0.5">Historique complet des passages enregistrés.</p>
@@ -51,54 +51,56 @@
 </div> --}}
 
 <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden mt-5 p-4">
-  <table id="transactionsTable" class="w-full text-sm">
-    <thead class="bg-gray-50 border-b border-gray-100">
-      <tr>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">ID</th>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Date / Heure</th>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Type de véhicule</th>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Immatriculation</th>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Guichet</th>
-        <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Mode de paiement</th>
-        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Montant</th>
-        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Statut</th>
-        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Agent</th>
-        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-50">
-      @forelse($paiements as $paiement)
-        <tr class="hover:bg-gray-50/50 transition">
-            <td class="px-5 py-3 font-mono text-xs text-gray-400">#TX{{ str_pad($paiement->id, 3, '0', STR_PAD_LEFT) }}</td>
-            <td class="px-5 py-3 text-gray-600">{{ $paiement->date_paiement ?? $paiement->created_at->format('d M Y — H:i') }}</td>
-            <td class="px-5 py-3 text-gray-800">{{ $paiement->categorieVehicule->libelle ?? 'N/A' }}</td>
-            <td class="px-5 py-3 text-gray-600">{{ $paiement->immatriculation ?? '-' }}</td>
-            <td class="px-5 py-3 text-gray-600">{{ $paiement->guichet->code ?? 'N/A' }}</td>
-            <td class="px-5 py-3 text-gray-600">{{ $paiement->typePaiement->libelle ?? 'N/A' }}</td>
-            <td class="px-5 py-3 text-right font-medium">{{ number_format($paiement->montant, 0, ',', ' ') }} F</td>
-            <td class="px-5 py-3 text-right">
-                @if(($paiement->statut ?? 'Payé') == 'Payé')
-                    <span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span>
-                @elseif(($paiement->statut ?? '') == 'En attente')
-                    <span class="pill-amber text-[11px] px-2.5 py-0.5 rounded-full">En attente</span>
-                @else
-                    <span class="pill-gray text-[11px] px-2.5 py-0.5 rounded-full">{{ $paiement->statut ?? 'Inconnu' }}</span>
-                @endif
-            </td>
-            <td class="px-5 py-3 text-right text-gray-500">{{ $paiement->user->nom ?? 'N/A' }}</td>
-            <td class="px-5 py-3 text-right">
-                <button onclick="printReceipt({{ $paiement->id }})" class="text-gray-500 hover:text-[#1D9E75] transition" title="Imprimer le ticket">
-                    <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                </button>
-            </td>
+  <div class="overflow-x-auto">
+    <table id="transactionsTable" class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">ID</th>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Date / Heure</th>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3 min-w-[150px]">Type de véhicule</th>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Immatriculation</th>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Guichet</th>
+          <th class="text-left text-xs text-gray-400 font-normal px-5 py-3">Mode de paiement</th>
+          <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Montant</th>
+          <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Statut</th>
+          <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Agent</th>
+          <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Actions</th>
         </tr>
-      @empty
-      <tr>
-        <td colspan="10" class="text-center py-8 text-gray-500">Aucune transaction enregistrée.</td>
-      </tr>
-      @endforelse
-    </tbody>
-  </table>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        @forelse($paiements as $paiement)
+          <tr class="hover:bg-gray-50/50 transition whitespace-nowrap">
+              <td class="px-5 py-3 font-mono text-xs text-gray-400">#TX{{ str_pad($paiement->id, 3, '0', STR_PAD_LEFT) }}</td>
+              <td class="px-5 py-3 text-gray-600">{{ $paiement->date_paiement ?? $paiement->created_at->format('d M Y — H:i') }}</td>
+              <td class="px-5 py-3 text-gray-800">{{ $paiement->categorieVehicule->libelle ?? 'N/A' }}</td>
+              <td class="px-5 py-3 text-gray-600">{{ $paiement->immatriculation ?? '-' }}</td>
+              <td class="px-5 py-3 text-gray-600">{{ $paiement->guichet->code ?? 'N/A' }}</td>
+              <td class="px-5 py-3 text-gray-600">{{ $paiement->typePaiement->libelle ?? 'N/A' }}</td>
+              <td class="px-5 py-3 text-right font-medium">{{ number_format($paiement->montant, 0, ',', ' ') }} F</td>
+              <td class="px-5 py-3 text-right">
+                  @if(($paiement->statut ?? 'Payé') == 'Payé')
+                      <span class="pill-green text-[11px] px-2.5 py-0.5 rounded-full">Payé</span>
+                  @elseif(($paiement->statut ?? '') == 'En attente')
+                      <span class="pill-amber text-[11px] px-2.5 py-0.5 rounded-full">En attente</span>
+                  @else
+                      <span class="pill-gray text-[11px] px-2.5 py-0.5 rounded-full">{{ $paiement->statut ?? 'Inconnu' }}</span>
+                  @endif
+              </td>
+              <td class="px-5 py-3 text-right text-gray-500">{{ $paiement->user->nom ?? 'N/A' }}</td>
+              <td class="px-5 py-3 text-right">
+                  <button onclick="printReceipt({{ $paiement->id }})" class="text-gray-500 hover:text-[#1D9E75] transition" title="Imprimer le ticket">
+                      <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                  </button>
+              </td>
+          </tr>
+        @empty
+        <tr>
+          <td colspan="10" class="text-center py-8 text-gray-500">Aucune transaction enregistrée.</td>
+        </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Nouvelle transaction Modal -->
