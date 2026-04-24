@@ -34,7 +34,7 @@ class UserController extends Controller
             'nom' => 'required|string|max:100',
             'prenoms' => 'required|string|max:100',
             'email' => 'required|email|unique:user,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ], [
             'nom.required' => 'Le nom est obligatoire.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',
@@ -47,6 +47,7 @@ class UserController extends Controller
             'email.unique' => 'Cette adresse email est déjà utilisée.',
             'password.required' => 'Le mot de passe est obligatoire.',
             'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
         User::create([
@@ -89,7 +90,7 @@ class UserController extends Controller
             'nom' => 'required|string|max:100',
             'prenoms' => 'required|string|max:100',
             'email' => 'required|email|unique:user,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|string|min:8|confirmed',
         ], [
             'nom.required' => 'Le nom est obligatoire.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',
@@ -101,6 +102,7 @@ class UserController extends Controller
             'email.email' => 'L’adresse email doit être une adresse valide.',
             'email.unique' => 'Cette adresse email est déjà utilisée.',
             'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
         $data = $request->only(['nom', 'prenoms', 'email']);

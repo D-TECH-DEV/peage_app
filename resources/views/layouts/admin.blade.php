@@ -105,6 +105,24 @@
   <!-- ===== MAIN CONTENT ===== -->
   <main class="flex-1 overflow-y-auto bg-gray-50">
     <div class="p-6 max-w-7xl mx-auto">
+      @if ($errors->any())
+        <div class="mb-5 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl relative">
+          <h4 class="text-sm font-semibold mb-1">Veuillez corriger les erreurs suivantes :</h4>
+          <ul class="list-disc list-inside text-sm">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      @if (session('success'))
+        <div class="mb-5 p-4 bg-[#E1F5EE] border border-[#1D9E75]/20 text-[#0F6E56] rounded-xl flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <p class="text-sm font-medium">{{ session('success') }}</p>
+        </div>
+      @endif
+
       @yield('content')
     </div>
   </main>

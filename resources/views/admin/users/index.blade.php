@@ -59,9 +59,15 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input type="email" name="email" value="{{ $user->email }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
           </div>
-          <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe <span class="text-gray-400 font-normal">(laisser vide pour ne pas changer)</span></label>
-              <input type="password" name="password" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+          <div class="grid grid-cols-2 gap-4">
+              <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe <span class="text-gray-400 font-normal">(optionnel)</span></label>
+                  <input type="password" name="password" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+              </div>
+              <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer mot de passe</label>
+                  <input type="password" name="password_confirmation" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+              </div>
           </div>
           <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2">
               <button type="button" onclick="document.getElementById('modal-edit-user-{{ $user->id }}').close()" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Annuler</button>
@@ -101,9 +107,15 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input type="email" name="email" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
       </div>
-      <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-          <input type="password" name="password" required minlength="8" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+      <div class="grid grid-cols-2 gap-4">
+          <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+              <input type="password" name="password" required minlength="8" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+          </div>
+          <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer mot de passe</label>
+              <input type="password" name="password_confirmation" required minlength="8" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+          </div>
       </div>
       <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2">
           <button type="button" onclick="document.getElementById('modal-create-user').close()" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">Annuler</button>
