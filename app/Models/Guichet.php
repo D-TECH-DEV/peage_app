@@ -13,4 +13,9 @@ class Guichet extends Model
     {
         return $this->hasMany(Paiement::class, 'guichet_id');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'guichet_user', 'guichet_id', 'user_id');
+    }
 }

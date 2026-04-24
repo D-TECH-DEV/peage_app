@@ -59,6 +59,17 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input type="email" name="email" value="{{ $user->email }}" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
           </div>
+          <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Guichets autorisés</label>
+              <div class="grid grid-cols-2 gap-2">
+                  @foreach($guichets as $guichet)
+                  <label class="flex items-center text-sm text-gray-600">
+                      <input type="checkbox" name="guichets[]" value="{{ $guichet->id }}" {{ $user->guichets->contains($guichet->id) ? 'checked' : '' }} class="mr-2 rounded text-[#1D9E75] focus:ring-[#1D9E75]">
+                      {{ $guichet->code }}
+                  </label>
+                  @endforeach
+              </div>
+          </div>
           <div class="grid grid-cols-2 gap-4">
               <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe <span class="text-gray-400 font-normal">(optionnel)</span></label>
@@ -106,6 +117,17 @@
       <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input type="email" name="email" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
+      </div>
+      <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Guichets autorisés</label>
+          <div class="grid grid-cols-2 gap-2">
+              @foreach($guichets as $guichet)
+              <label class="flex items-center text-sm text-gray-600">
+                  <input type="checkbox" name="guichets[]" value="{{ $guichet->id }}" class="mr-2 rounded text-[#1D9E75] focus:ring-[#1D9E75]">
+                  {{ $guichet->code }}
+              </label>
+              @endforeach
+          </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
           <div>

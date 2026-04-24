@@ -44,4 +44,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Paiement::class, 'user_id');
     }
+
+    public function guichets()
+    {
+        return $this->belongsToMany(Guichet::class, 'guichet_user', 'user_id', 'guichet_id');
+    }
 }

@@ -63,6 +63,7 @@
         <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Montant</th>
         <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Statut</th>
         <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Agent</th>
+        <th class="text-right text-xs text-gray-400 font-normal px-5 py-3">Actions</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-50">
@@ -85,10 +86,15 @@
                 @endif
             </td>
             <td class="px-5 py-3 text-right text-gray-500">{{ $paiement->user->nom ?? 'N/A' }}</td>
+            <td class="px-5 py-3 text-right">
+                <button onclick="printReceipt({{ $paiement->id }})" class="text-gray-500 hover:text-[#1D9E75] transition" title="Imprimer le ticket">
+                    <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                </button>
+            </td>
         </tr>
       @empty
       <tr>
-        <td colspan="9" class="text-center py-8 text-gray-500">Aucune transaction enregistrée.</td>
+        <td colspan="10" class="text-center py-8 text-gray-500">Aucune transaction enregistrée.</td>
       </tr>
       @endforelse
     </tbody>
@@ -129,43 +135,14 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Montant (F CFA)</label>
-                    <input type="number" name="montant" required min="0" step="50" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Immatriculation</label>
-                    <input type="text" name="immatriculation" placeholder="Facultatif" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Immatriculation</label>
+                <input type="text" name="immatriculation" placeholder="Facultatif (ex: 1234 AB 01)" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Guichet</label>
-                    <select name="guichet_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
-                        @foreach($guichets as $guichet)
-                            <option value="{{ $guichet->id }}">{{ $guichet->code }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Agent (Utilisateur)</label>
-                    <select name="user_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ auth()->id() == $user->id ? 'selected' : '' }}>{{ $user->nom }} {{ $user->prenoms }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                <select name="statut" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#1D9E75]">
-                    <option value="Payé">Payé</option>
-                    <option value="En attente">En attente</option>
-                    <option value="Annulé">Annulé</option>
-                </select>
+            <div class="mt-4 flex items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                <input type="checkbox" name="auto_print" id="auto_print" value="1" class="h-4 w-4 text-[#1D9E75] focus:ring-[#1D9E75] border-gray-300 rounded" checked>
+                <label for="auto_print" class="ml-2 block text-sm font-medium text-gray-700 cursor-pointer">Impression automatique du ticket de reçu</label>
             </div>
 
             <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-5">
@@ -196,5 +173,21 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+@if(session('print_receipt_id'))
+    setTimeout(() => {
+        printReceipt({{ session('print_receipt_id') }});
+    }, 500);
+@endif
+
+function printReceipt(id) {
+    const url = "{{ url('admin/paiements') }}/" + id + "/receipt";
+    const printWindow = window.open(url, "ReçuPéage", "width=380,height=600,top=100,left=100,toolbar=no,menubar=no,scrollbars=yes,resizable=yes");
+    if(printWindow) {
+        printWindow.focus();
+    } else {
+        alert("⚠️ L'impression automatique a été bloquée par votre navigateur. Veuillez autoriser les pop-ups pour ce site.");
+    }
+}
 </script>
 @endpush

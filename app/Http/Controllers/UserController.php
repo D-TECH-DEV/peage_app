@@ -14,7 +14,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('admin.users.index', compact('users'));
+        $guichets = \App\Models\Guichet::where('statut', 'Actif')->get();
+        return view('admin.users.index', compact('users', 'guichets'));
     }
 
     /**
@@ -50,12 +51,16 @@ class UserController extends Controller
             'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
-        User::create([
+        $user = User::create([
             'nom' => $request->nom,
             'prenoms' => $request->prenoms,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->has('guichets')) {
+            $user->guichets()->sync($request->guichets);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur créé avec succès.');
@@ -111,6 +116,12 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        if ($request->has('guichets')) {
+            $user->guichets()->sync($request->guichets);
+        } else {
+            $user->guichets()->sync([]);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur mis à jour avec succès.');

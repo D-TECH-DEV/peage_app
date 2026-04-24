@@ -6,7 +6,10 @@
   <title>Péage Pro — @yield('title', 'Tableau de bord')</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <!-- Optional: Include modal or other global dependencies -->
+  <!-- jQuery & Select2 -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <!-- CSS -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -36,6 +39,20 @@
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 99px; }
+
+    /* Select2 Tailwind Override */
+    .select2-container--default .select2-selection--single {
+        border-color: #e5e7eb !important; border-radius: 0.5rem !important; height: 38px !important; display: flex; align-items: center; outline: none !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important; font-size: 0.875rem !important; padding-left: 0.75rem !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important; right: 8px !important;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #1D9E75 !important;
+    }
   </style>
   @stack('styles')
 </head>
@@ -129,6 +146,26 @@
 </div>
 
 <!-- ===== JAVASCRIPT ===== -->
+<script>
+$(document).ready(function() {
+    function initSelect2() {
+        $('select').each(function() {
+            let dialog = $(this).closest('dialog');
+            $(this).select2({
+                width: '100%',
+                dropdownParent: dialog.length ? dialog : $(document.body)
+            });
+        });
+    }
+    initSelect2();
+
+    // Re-init if new elements are added dynamically (or when dialogs show)
+    const observer = new MutationObserver((mutations) => {
+        initSelect2();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+});
+</script>
 @stack('scripts')
 </body>
 </html>
