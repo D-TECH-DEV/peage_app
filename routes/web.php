@@ -19,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
-    return Hash::make('dydoumdje2004@gmail.com');
+    return redirect(route('admin.dashboard'));
 });
 
 Route::get('/tarifs', [TarifController::class, 'index'])->name('frontend.tarifs.index');
@@ -29,6 +29,7 @@ Route::get('/guichets', [GuichetController::class, 'index'])->name('frontend.gui
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export', [App\Http\Controllers\DashboardController::class, 'exportStats'])->name('dashboard.export');
 
     Route::get('/rapports', function() {
         return view('admin.rapports.index');
@@ -45,6 +46,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('categories-vehicules', CategorieVehiculeController::class);
     Route::resource('guichets', GuichetController::class);
     Route::get('paiements/{paiement}/receipt', [PaiementController::class, 'receipt'])->name('paiements.receipt');
+    Route::get('paiements/export', [PaiementController::class, 'exportCsv'])->name('paiements.export');
     Route::resource('paiements', PaiementController::class);
     Route::resource('tarifs', TarifController::class);
     Route::resource('types-paiements', TypePaiementController::class);

@@ -10,12 +10,12 @@
     <p class="text-sm text-gray-500 mt-0.5">Suivre, analyser et optimiser les recettes du péage.</p>
   </div>
   <div class="flex items-center gap-2">
-    <button class="text-sm px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition">Exporter</button>
+    <a href="{{ route('admin.dashboard.export') }}" class="text-sm px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition">Exporter</a>
     
-    <a href="{{ route('admin.paiements.create') }}" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition flex items-center gap-2 inline-flex">
+    <button onclick="document.getElementById('transactionModal').showModal()" class="text-sm px-4 py-2 bg-[#1D9E75] text-white rounded-lg hover:bg-[#0F6E56] transition flex items-center gap-2 inline-flex">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
       Nouveau passage
-    </a>
+    </button>
   </div>
 </div>
 
@@ -173,6 +173,8 @@
     </div>
   </div>
 </div>
+
+@include('admin.paiements.partials.modal')
 @endsection
 
 @push('scripts')
@@ -244,5 +246,22 @@
       }
     }
   });
+
+  // ─── Impression de ticket ───────────────────────────────────────────────────
+  @if(session('print_receipt_id'))
+      setTimeout(() => {
+          printReceipt({{ session('print_receipt_id') }});
+      }, 500);
+  @endif
+
+  function printReceipt(id) {
+      const url = "{{ url('admin/paiements') }}/" + id + "/receipt";
+      const printWindow = window.open(url, "ReçuPéage", "width=380,height=600,top=100,left=100,toolbar=no,menubar=no,scrollbars=yes,resizable=yes");
+      if(printWindow) {
+          printWindow.focus();
+      } else {
+          alert("⚠️ L'impression automatique a été bloquée par votre navigateur. Veuillez autoriser les pop-ups pour ce site.");
+      }
+  }
 </script>
 @endpush

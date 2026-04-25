@@ -162,4 +162,36 @@ class PaiementController extends Controller
         $paiement = Paiement::with(['categorieVehicule', 'typePaiement', 'guichet', 'user'])->findOrFail($id);
         return view('admin.paiements.receipt_print', compact('paiement'));
     }
+
+    public function exportCsv()
+    {
+        $paiements = Paiement::with(['categorieVehicule', 'typePaiement', 'guichet', 'user'])->get();
+
+        $filename = "transactions_" . date('Y-m-d') . ".csv";
+        $handle = fopen('php://output', 'w');
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        // Headers
+        fputcsv($handle, ['ID', 'Date', 'Categorie', 'Immatriculation', 'Guichet', 'Mode de Paiement', 'Montant', 'Statut', 'Agent']);
+
+        // Data
+        foreach ($paiements as $p) {
+            fputcsv($handle, [
+                $p->id,
+                $p->date_paiement ?? $p->created_at,
+                $p->categorieVehicule->libelle ?? 'N/A',
+                $p->immatriculation ?? '-',
+                $p->guichet->code ?? 'N/A',
+                $p->typePaiement->libelle ?? 'N/A',
+                $p->montant,
+                $p->statut ?? 'Payé',
+                $p->user->nom ?? 'N/A'
+            ]);
+        }
+
+        fclose($handle);
+        exit;
+    }
 }

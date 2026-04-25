@@ -90,10 +90,43 @@ class DashboardController extends Controller
         
         $currentGuichet = Guichet::find(session('guichet_id'));
 
+        $categories = CategorieVehicule::all();
+        $types = TypePaiement::all();
+
         return view('admin.dashboard', compact(
             'recettesMois', 'percentChange', 'totalPassagesMois', 'guichetsActifs', 'totalGuichets', 'recetteMoyenneJour',
             'rendementLabels', 'rendementData', 'vehiculesLabels', 'vehiculesData',
-            'recentTransactions', 'modesStats', 'performancesGuichets', 'currentGuichet'
+            'recentTransactions', 'modesStats', 'performancesGuichets', 'currentGuichet',
+            'categories', 'types'
         ));
+    }
+
+    public function exportStats()
+    {
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $recettesMois = Paiement::whereBetween('date_paiement', [$startOfMonth, $endOfMonth])->sum('montant');
+        $totalPassagesMois = Paiement::whereBetween('date_paiement', [$startOfMonth, $endOfMonth])->count();
+        $guichetsActifs = Guichet::where('statut', 'Actif')->count();
+        $totalGuichets = Guichet::count();
+
+        $filename = "statistiques_dashboard_" . date('Y-m-d') . ".csv";
+        $handle = fopen('php://output', 'w');
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        // Headers
+        fputcsv($handle, ['Statistique', 'Valeur']);
+
+        // Data
+        fputcsv($handle, ['Recettes du mois', number_format($recettesMois, 0, ',', ' ') . ' F']);
+        fputcsv($handle, ['Total passages', $totalPassagesMois]);
+        fputcsv($handle, ['Guichets actifs', "$guichetsActifs / $totalGuichets"]);
+        fputcsv($handle, ['Date d\'export', date('d/m/Y H:i')]);
+
+        fclose($handle);
+        exit;
     }
 }
